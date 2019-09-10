@@ -1,3 +1,4 @@
+import os
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -10,6 +11,11 @@ from datasets import ImageDataset
 
 # GPU 사용여부
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# images & pretrained 디렉터리 생성
+os.makedirs('images', exist_ok=True)
+os.makedirs('pretrained', exist_ok=True)
+print('Directories created')
 
 # 하이퍼 파라매터
 num_epoch = 200
@@ -25,14 +31,19 @@ transforms = transforms.Compose([
                 transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
 
 ### monet2photo 데이터셋
-dataset = ImageDataset(root='../../data/monet2photo/', 
-                       transforms=transforms)
+datasets = {'{}'.format(mode) : ImageDataset(root='../../data/monet2photo/', 
+                                transforms=transforms,
+                                mode=mode)
+                                for mode in ['train', 'test']}
 
 ### 데이터 로드
-dataloader = DataLoader(dataset,
-                        batch_size=1,
-                        shuffle=True,
-                        num_workers=8) 
+dataloader = {'{}'.format(data) : DataLoader(datasets[data],
+                                  batch_size=1,
+                                  shuffle=True,
+                                  num_workers=8)
+                                  for data in ['train', 'test']}
+
+
 
 
 def main():
@@ -51,7 +62,7 @@ def main():
     optim.lr_scheduler.LambdaLR(optimizer_D, lr_lambda=lambda epoch : 1.0 - max(0, epoch - 100)/100)
     optim.lr_scheduler.LambdaLR(optimizer_G, lr_lambda=lambda epoch : 1.0 - max(0, epoch - 100)/100)
     for epoch in range(num_epoch):
-        for i, imgs in enumerate(dataloader):
+        for i, imgs in enumerate(dataloader['train']):
             x = imgs['X'].to(device)
             y = imgs['Y'].to(device)
 
@@ -141,14 +152,30 @@ def main():
             print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]" % (epoch, num_epoch, i, len(dataloader),
                                                                 loss_cycleGAN_D.item(), loss_cycleGAN_G.item()))
 
-            # 이미지 저장 (save per 500 iter)
+            # Sampling 이미지 저장 (save per 500 iter)
             batches_done = epoch * len(dataloader) + i 
             if batches_done % 500 == 0:
-                x_img = torch.cat([x, x_fake, recov_x], dim=3)
-                y_img = torch.cat([y, y_fake, recov_y], dim=3)
+                val = next(iter(dataloader['test']))
+                real_X = val['X'].to(device)
+                real_Y = val['Y'].to(device)
+
+                with torch.no_grad():
+                    fake_X = G(real_X)
+                    fake_Y = F(real_Y)
+                    recov_X = F(fake_X)
+                    recov_Y = G(fake_Y)
+
+                x_img = torch.cat([real_X, fake_X, recov_X], dim=3)
+                y_img = torch.cat([real_Y, fake_Y, recov_Y], dim=3)
                 total_img = torch.cat([x_img, y_img], dim=2)
                 save_image(total_img, 'images/%d.png' % batches_done, nrow=1, normalize=True)
-
+        
+        torch.save({
+                    'G' : G.state_dict(),
+                    'F' : F.state_dict(),
+                   }
+                   , 'pretrained/cyclegan.pth')
+        print('[*] model saved')
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,4 @@
 from torch.utils.data import Dataset
-from torchvision import transforms
 
 import os
 import glob
@@ -23,23 +22,3 @@ class ImageDataset(Dataset):
 
     def __len__(self):
         return max(len(self.files_A), len(self.files_B))
-
-
-
-if __name__ == '__main__':
-   
-    transform = [transforms.Resize(128),
-                  transforms.ToTensor(),
-                  transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))] 
-
-
-    from torch.utils.data import DataLoader
-    dataset = ImageDataset(root='../../data/monet2photo/', transform=transform)
-    dataloader = DataLoader(dataset,
-                            batch_size=1,
-                            shuffle=True,
-                            num_workers=0
-    )
-
-    for i in dataloader:
-        print(i['A'].shape)
