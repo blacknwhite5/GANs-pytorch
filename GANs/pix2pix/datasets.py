@@ -21,30 +21,3 @@ class ImageDataset(Dataset):
 
     def __len__(self):
         return len(self.files)
-
-
-if __name__ == '__main__':
-    from torchvision import transforms
-    transforms = transforms.Compose([
-                    transforms.ToTensor(),
-                    transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))])
-
-#    dataset = ImageDataset(root='../../data/facades/',
-#                           transforms=transforms,
-#                           mode='train')
-
-    dataset = ImageDataset(root='../../data/facades/',
-                           transforms=transforms,
-                           mode='test')
-
-    from torch.utils.data import DataLoader
-    dataloader = DataLoader(dataset,
-                            batch_size=1,
-                            shuffle=True,
-                            num_workers=8)
-
-    import cv2
-    import numpy as np
-    for img in dataloader:
-        A = img['A']
-        B = img['B']
