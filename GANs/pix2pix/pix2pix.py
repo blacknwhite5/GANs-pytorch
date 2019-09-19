@@ -16,7 +16,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # images & pretrained 디렉터리 생성
 os.makedirs('images', exist_ok=True)
 os.makedirs('pretrained', exist_ok=True)
+save_path = 'pretrained/pix2pix.pth'
 print('Directories created')
+
 
 # 하이퍼 파라매터
 num_epoch = 200
@@ -44,10 +46,17 @@ dataloader = {'{}'.format(mode) : DataLoader(datasets[mode],
                                   for mode in ['train', 'test']}
 
 
-if __name__ == '__main__':
+def main():
     # 네트워크
     G = UNet().to(device)
     D = Discriminator().to(device)
+
+    # pretrained 모델 불러오기
+    if os.path.isfile(save_path):
+        checkpoint = torch.load(save_path)
+        G.load_state_dict(checkpoint['G'])
+        D.load_state_dict(checkpoint['D'])
+        print('Pretrained model loaded')
 
     G_optim = optim.Adam(G.parameters(), lr=0.0002, betas=(0.5, 0.999))
     D_optim = optim.Adam(D.parameters(), lr=0.0002, betas=(0.5, 0.999))
@@ -101,3 +110,14 @@ if __name__ == '__main__':
         with torch.no_grad():
             fake_A = G(real_B)
         save_image(torch.cat([real_A, real_B, fake_A], dim=3), 'images/{0:03d}.png'.format(epoch+1), nrow=2, normalize=True)
+
+        # 모델 저장
+        torch.save({
+                'G' : G.state_dict(),
+                'D' : D.state_dict(),
+            },
+            'pretrained/pix2pix.pth')
+
+
+if __name__ == '__main__':
+    main()
