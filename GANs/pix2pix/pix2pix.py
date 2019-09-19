@@ -93,5 +93,11 @@ if __name__ == '__main__':
                                                                 loss_D.item(), loss_G.item()))
 
 
-        # 이미지 저장
-        save_image(torch.cat([A, B, fake], dim=3), 'images/{0:03d}.png'.format(epoch+1), nrow=2, normalize=True)
+        # 이미지 저장 (save per epoch)
+        val = next(iter(dataloader['test']))
+        real_A = val['A'].to(device)
+        real_B = val['B'].to(device)
+
+        with torch.no_grad():
+            fake_A = G(real_B)
+        save_image(torch.cat([real_A, real_B, fake_A], dim=3), 'images/{0:03d}.png'.format(epoch+1), nrow=2, normalize=True)
