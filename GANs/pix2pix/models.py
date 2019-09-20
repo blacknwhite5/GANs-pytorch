@@ -95,3 +95,10 @@ class Discriminator(nn.Module):
         b4 = self.block4(b3)
         out = self.block5(b4)
         return out
+
+
+def weight_init(m, mean=0, std=0.02):
+    classname = m.__class__.__name__
+    if classname.find("Conv") != -1:
+        m.weight.data.normal_(mean, std)
+        m.bias.data.zero_()
