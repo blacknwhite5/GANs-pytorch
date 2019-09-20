@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.utils import save_image
 
-from model import UNet, Discriminator
+from models import UNet, Discriminator, weight_init
 from datasets import ImageDataset
 
 # GPU 사용여부
@@ -51,6 +51,10 @@ def main():
     G = UNet().to(device)
     D = Discriminator().to(device)
 
+    # 네트워크 초기화
+    G.apply(weight_init)
+    D.apply(weight_init)
+
     # pretrained 모델 불러오기
     if os.path.isfile(save_path):
         checkpoint = torch.load(save_path)
@@ -65,7 +69,7 @@ def main():
         for i, imgs in enumerate(dataloader['train']):
             A = imgs['A'].to(device)
             B = imgs['B'].to(device)
-            
+
             # # # # #
             # Discriminator
             # # # # #
@@ -76,7 +80,10 @@ def main():
             D_fake = D(fake, B)
             D_real = D(A, B)
 
+            # original loss D
             loss_D = -((D_real.log() + (1-D_fake).log()).mean())
+#            # LSGAN loss D
+#            loss_D = ((D_real - 1)**2).mean() + (D_fake**2).mean()
     
             D_optim.zero_grad()
             loss_D.backward()
@@ -91,7 +98,10 @@ def main():
             fake = G(B)
             D_fake = D(fake, B)
 
+            # original loss G
             loss_G = -(D_fake.mean().log()) + lambda_recon * torch.abs(A - fake).mean()
+#            # LSGAN loss G
+#            loss_G = ((D_fake-1)**2).mean() + lambda_recon * torch.abs(A - fake).mean()
 
             G_optim.zero_grad()
             loss_G.backward()

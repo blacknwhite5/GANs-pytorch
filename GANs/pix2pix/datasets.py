@@ -18,6 +18,17 @@ class ImageDataset(Dataset):
         img_A = img[:,:,:w//2]
         img_B = img[:,:,w//2:]
 
+        # random crop 
+        # (256 --(resize)--> 286 --(random crop)--> 256)
+        img_A = torch.nn.functional.interpolate(img_A.unsqueeze(0), (286,286))
+        img_B = torch.nn.functional.interpolate(img_B.unsqueeze(0), (286,286))
+
+        i = torch.randint(0, (286-256), (1,)).item()
+        j = torch.randint(0, (286-256), (1,)).item()
+
+        img_A = img_A.squeeze()[:,j:j+256,i:i+256]
+        img_B = img_B.squeeze()[:,j:j+256,i:i+256]
+
         # flip
         if torch.randn(1) < 0.5:
             img_A = torch.flip(img_A, dims=(2,))
