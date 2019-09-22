@@ -1,6 +1,5 @@
 import os
 import torch
-import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from torchvision import transforms
@@ -21,6 +20,7 @@ print('Directories created')
 num_epoch = 200
 lambda_consist = 10
 lambda_id = lambda_consist // 2 
+save_path = 'pretrained/cyclegan.pth'
 
 
 # 이미지 불러오기
@@ -52,6 +52,16 @@ def main():
     F = define_G(input_nc=3, output_nc=3, ngf=64, netG='resnet_9blocks', norm='instance').to(device)
     Dx = define_D(input_nc=3, ndf=64, netD='basic', norm='instance').to(device)
     Dy = define_D(input_nc=3, ndf=64, netD='basic', norm='instance').to(device)
+
+    # pretrained model
+    if os.path.insfile(save_path):
+        checkpoint = torch.load(save_path)
+        G.load_state_dict(checkpoint['G'])
+        F.load_state_dict(checkpoint['F'])
+        Dx.load_state_dict(checkpoint['Dx'])
+        Dy.load_state_dict(checkpoint['Dy'])
+        print('Pretrained model loaded')
+
 
     # optimizer 정의
     import itertools
@@ -149,7 +159,7 @@ def main():
             optimizer_G.step()
 
             # 학습 진행사항 출력
-            print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]" % (epoch, num_epoch, i, len(dataloader),
+            print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]" % (epoch, num_epoch, i, len(dataloader['train']),
                                                                 loss_cycleGAN_D.item(), loss_cycleGAN_G.item()))
 
             # Sampling 이미지 저장 (save per 500 iter)
@@ -173,8 +183,10 @@ def main():
         torch.save({
                     'G' : G.state_dict(),
                     'F' : F.state_dict(),
+                    'Dx': Dx.state_dict(),
+                    'Dy': Dy.state_dict()
                    }
-                   , 'pretrained/cyclegan.pth')
+                   , save_path)
         print('[*] model saved')
 
 if __name__ == '__main__':
