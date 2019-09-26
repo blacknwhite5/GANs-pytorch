@@ -45,8 +45,14 @@ def main():
     G = Generator().to(device)
     D = Discriminator().to(device)
 
+    # 최적화
     D_optim = optim.Adam(D.parameters(), lr=0.0002, betas=(0.5, 0.999))
     G_optim = optim.Adam(G.parameters(), lr=0.0002, betas=(0.5, 0.999))
+
+    # loss 함수
+    loss_BCE = nn.BCELoss()
+    loss_MSE = nn.MSELoss()
+    loss_CE = nn.CrossEntropyLoss()
 
     for epoch in range(num_epoch):
         for i, (img, cls) in enumerate(dataloader):
@@ -59,25 +65,42 @@ def main():
             # # # # #
             # Discriminator
             # # # # #
-            x_hat = G(z)
-            D_fake_cls, D_fake = D(x_hat)
+            fake = G(z)
+            D_fake_cls, D_fake = D(fake)
             D_real_cls, D_real = D(img)
 
-            loss_isArt = -((D_real.log() + (1-D_fake).log()).mean())
+            loss_D_real = loss_BCE(D_real, torch.ones_like(D_real))
+            loss_D_fake = loss_BCE(D_fake, torch.zeros_like(D_fake))
+            loss_D_cls_real = loss_CE(D_real_cls, cls)
 
-            D_real_cls = torch.argmax(D_real_cls, dim=1).float()
-            D_fake_cls = torch.argmax(D_fake_cls, dim=1).float()
-            loss_isExistStyle = -(D_real_cls.mean().log() - (1/27)*(D_fake_cls.mean().log()) \
-                                                                + (1-1/27)*(1-D_fake_cls.mean().log()))
-
-#            loss_isExistStyle = -(D_real_cls.log() - (1/27)*(D_fake_cls.log()) \
-#                                                        + (1-1/27)*(1-D_fake_cls).log()).mean()
-            print(loss_isExistStyle)
+            loss_D = loss_D_real + loss_D_fake + loss_D_cls_real 
+            
+            D_optim.zero_grad()
+            loss_D.backward(retain_graph=True)
+            D_optim.step()
 
             # # # # #
             # Generator 
             # # # # #
 
+            loss_G_fake = loss_BCE(D_fake, torch.ones_like(D_fake))
+            loss_G_cls_fake = loss_MSE(D_fake_cls, (1.0/27)*torch.ones_like(D_fake_cls))
+            loss_G = loss_G_fake + loss_G_cls_fake
+
+            G_optim.zero_grad()
+            loss_G.backward()
+            G_optim.step()
+
+
+            # 학습 진행사항 출력
+            print("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]" % (epoch, num_epoch, i*batch_size, len(wikiart),
+                                                                loss_D.item(), loss_G.item()))
+
+
+            # 이미지 저장 (save per epoch)
+            batch_done = epoch * len(wikiart) + i
+            if batch_done % 500 == 0:
+                save_image(fake, 'images/{0:03d}.png'.format(batch_done), normalize=True)
 
 if __name__ == '__main__':
     main()

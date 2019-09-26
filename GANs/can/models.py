@@ -58,6 +58,8 @@ class Discriminator(nn.Module):
                 layers.append(nn.Softmax(dim=0))
             elif activation == 'sigmoid':
                 layers.append(nn.Sigmoid())
+            elif activation == 'none':
+                pass
             else:
                 raise NotImplementedError('Illegal activation, opts: lrelu, softmax, sigmoid')
             return layers
@@ -72,7 +74,7 @@ class Discriminator(nn.Module):
 
         self.classifier = nn.Sequential(*block('linear', 512*4*4, 1024, norm=False),
                                         *block('linear', 1024, 512, norm=False),
-                                        *block('linear', 512, 27, norm=False, activation='softmax'))
+                                        *block('linear', 512, 27, norm=False, activation='none'))
 
         self.discriminator = nn.Sequential(*block('linear', 512*4*4, 1, norm=False, activation='sigmoid'))
 
@@ -82,16 +84,3 @@ class Discriminator(nn.Module):
         real_or_fake = self.discriminator(out)
         cls = self.classifier(out)
         return cls, real_or_fake
-
-
-if __name__ == '__main__':
-    import torch
-    rand = torch.randn([1,1,1,100])
-
-    G = Generator()
-    fake = G(rand)
-
-    D = Discriminator()
-    print(D)
-    cls, rof = D(fake)
-    print(cls.shape, rof.shape)
