@@ -40,6 +40,7 @@ dataloader = DataLoader(wikiart,
                         num_workers=8)
 
 
+
 def main():
     # 네트워트
     G = Generator().to(device)
@@ -51,7 +52,6 @@ def main():
 
     # loss 함수
     loss_BCE = nn.BCELoss()
-    loss_MSE = nn.MSELoss()
     loss_CE = nn.CrossEntropyLoss()
 
     for epoch in range(num_epoch):
@@ -79,12 +79,14 @@ def main():
             loss_D.backward(retain_graph=True)
             D_optim.step()
 
+
             # # # # #
             # Generator 
             # # # # #
-
             loss_G_fake = loss_BCE(D_fake, torch.ones_like(D_fake))
-            loss_G_cls_fake = loss_MSE(D_fake_cls, (1.0/27)*torch.ones_like(D_fake_cls))
+            loss_G_cls_fake = -((1/27)*torch.ones(batch_size, 27).to(device) \
+                                    * nn.LogSoftmax(dim=1)(D_fake_cls)).sum(dim=1).mean()
+
             loss_G = loss_G_fake + loss_G_cls_fake
 
             G_optim.zero_grad()

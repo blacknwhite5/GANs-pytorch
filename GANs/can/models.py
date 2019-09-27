@@ -61,7 +61,7 @@ class Discriminator(nn.Module):
             elif activation == 'none':
                 pass
             else:
-                raise NotImplementedError('Illegal activation, opts: lrelu, softmax, sigmoid')
+                raise NotImplementedError('Illegal activation, opts: lrelu, softmax, sigmoid, none')
             return layers
 
 
