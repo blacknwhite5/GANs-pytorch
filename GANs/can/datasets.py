@@ -6,6 +6,7 @@ from PIL import Image
 
 class ImageDataset(Dataset):
     def __init__(self, root, transforms=None):
+        Image.MAX_IMAGE_PIXELS = None
         self.transforms = transforms
         self.classes = {}
         for i, cls in enumerate(sorted(glob.glob(os.path.join(root, '*')))):
