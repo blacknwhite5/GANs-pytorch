@@ -27,6 +27,10 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 
 #### 6. results (200 epoch)
 
+<p align="center">
+    <img src="assets/result_pi2pix.gif", width="360">
+</p>
+
 #### 참고
 - [University of California, Berkeley  
 In CVPR 2017]([https://phillipi.github.io/pix2pix/](https://phillipi.github.io/pix2pix/))
