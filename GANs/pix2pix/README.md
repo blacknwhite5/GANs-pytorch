@@ -21,6 +21,10 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 
 #### 3. Network
 
+<p align="center">
+    <img src="assets/pix2pix_unet.png">
+</p>
+
 #### 4. Visualization
 
 #### 5. Implemenation
@@ -28,7 +32,7 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 #### 6. results (200 epoch)
 
 <p align="center">
-    <img src="assets/result_pi2pix.gif", width="360">
+    <img src="assets/result_pix2pix.gif", width="360">
 </p>
 
 #### 참고
