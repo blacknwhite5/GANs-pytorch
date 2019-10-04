@@ -17,7 +17,16 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 
 위와 같은 결과를 내기 위해서 [Conditional GAN]([https://arxiv.org/abs/1411.1784](https://arxiv.org/abs/1411.1784))을 활용한다. 네트워크는 입력된 이미지에서 새로운 이미지를 만들어내며(generator), 생성된 이미지가 입력된 이미지의 pair 이미지와 같은지, 다른지(discriminator)를 통해 손실함수가 최적화되며 이미지 매핑을 배우게 된다. 
 
-(loss 함수 설명)
+<p align="center">
+    <img src="http://latex.codecogs.com/gif.latex?%5Cmathcal%7BL%7D_%7BcGAN%7D%28G%2C%20D%29%20%3D%20%5Cmathbb%7BE%7D_%7Bx%2Cy%7D%5BlogD%28x%2Cy%29%5D%20&plus;%20%5Cmathbb%7BE%7D_%7Bx%2Cz%7D%5Blog%281-D%28x%2C%20G%28x%2Cz%29%29%29%5D"\>
+</p>
+
+<p align="center">
+    <img src="http://latex.codecogs.com/gif.latex?%5Cmathcal%7BL%7D_%7BL1%7D%28G%29%20%3D%20%5Cmathbb%7BE%7D_%7Bx%2Cy%2Cx%7D%5B%5Cleft%20%5C%7C%20y-G%28x%2Cz%29%20%5Cright%20%5C%7C_1%5D">
+</p>
+<p align="center">
+    <img src="http://latex.codecogs.com/gif.latex?G%5E*%20%3D%20%5Carg%20%5Cmin_%7BG%7D%20%5Cmax_%7BD%7D%20%5Cmathcal%7BL%7D_%7BcGAN%7D%28G%2CD%29%20&plus;%20%5Clambda%20%5Cmathcal%7BL%7D_%7BL1%7D%28G%29">
+</p>
 
 #### 3. Network
 
