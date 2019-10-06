@@ -38,6 +38,10 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 
 #### 5. Implemenation
 
+```
+python pix2pix.py
+```
+
 #### 6. results (200 epoch)
 
 <p align="center">
