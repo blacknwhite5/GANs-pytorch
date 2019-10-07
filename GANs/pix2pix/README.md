@@ -30,8 +30,14 @@ Phillip Isola, Jun-Yan Zhu, Tinghui Zhou, Alexei A. Efros
 
 #### 3. Network
 
+ - Generator (U-net)
 <p align="center">
     <img src="assets/pix2pix_unet.png">
+</p>
+
+ - Discriminator (Patch)
+<p align="center">
+    <img src="assets/pix2pix_patch.png">
 </p>
 
 #### 4. Visualization
