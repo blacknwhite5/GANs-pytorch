@@ -19,6 +19,10 @@ CycleGAN은 pair하지 않은 이미지들로 학습하여 서로의 스타일�
     <img src="https://junyanz.github.io/CycleGAN/images/teaser_high_res.jpg">
 </p>
 
+하지만 기존의 GAN loss를 사용하면 문제점은 입력으로 넣은 그림에서 target 이미지로 생성되는 것을 막을 수 없다. 즉, 모네 그림을 넣어서 사진같은 모네 그림을 얻는 **스타일**을 배우는 것이 아니라 target 이미지와 비슷한 생성물을 얻게될 수 있다.
+
+CycleGAN의 loss 컨셉은 입력 그림에서 생성된 이미지가 다시 입력 그림으로 재생성이 될 수 있게 강제하는 것이다. 스타일을 바꾸지만 원래 그림으로 복구가능할 정도만 바꾸게 제약을 거는 것이다. 이 제약을 걸어주는 loss는 pix2pix의 pixel level difference를 추가해주는 것과 같다.
+
 #### 3. Network
 
 #### 4. Implemenation
@@ -32,3 +36,4 @@ python cyclegan.py
 
 #### 참고
 - [junyanz.github.io](https://junyanz.github.io/CycleGAN/)
+- [GAN을 이용한 Image to Image Translation: Pix2Pix, CycleGAN, DiscoGAN-Taeoh Kim's Blog](https://taeoh-kim.github.io/blog/gan%EC%9D%84-%EC%9D%B4%EC%9A%A9%ED%95%9C-image-to-image-translation-pix2pix-cyclegan-discogan/)
