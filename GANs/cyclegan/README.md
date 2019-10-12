@@ -32,6 +32,10 @@ python cyclegan.py
 
 #### 5. Visualization
 
+<p align="center">
+    <img src="assets/visualize.png", width="360">
+</p>
+
 #### 6. results (200 epoch)
 
 #### 참고
