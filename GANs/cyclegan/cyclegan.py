@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchvision.utils import save_image
 
-from model import define_G, define_D
+from models import Generator, Discriminator, weights_init
 from datasets import ImageDataset
 
 
@@ -59,10 +59,16 @@ dataloader = {'{}'.format(data) : DataLoader(datasets[data],
 
 def main():
     # D & G 네트워크 생성
-    G = define_G(input_nc=3, output_nc=3, ngf=64, netG='resnet_9blocks', norm='instance').to(device)
-    F = define_G(input_nc=3, output_nc=3, ngf=64, netG='resnet_9blocks', norm='instance').to(device)
-    Dx = define_D(input_nc=3, ndf=64, netD='basic', norm='instance').to(device)
-    Dy = define_D(input_nc=3, ndf=64, netD='basic', norm='instance').to(device)
+    G = Generator().to(device)
+    F = Generator().to(device)
+    Dx = Discriminator().to(device)
+    Dy = Discriminator().to(device)
+
+    # 네트워크 초기화
+    G.apply(weights_init)
+    F.apply(weights_init)
+    Dx.apply(weights_init)
+    Dy.apply(weights_init)
 
     # pretrained model
     if args.reuse:

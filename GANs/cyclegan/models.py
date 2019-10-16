@@ -55,11 +55,41 @@ class Generator(nn.Module):
 
     def forward(self, x):
         x = self.down_sample(x)
-        x = self.resnet(x)
+        x = self.resnet_blocks(x)
         out = self.up_sample(x)
         return out
 
 
-G = Generator()
 
-print(G)
+class Discriminator(nn.Module):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+
+        def Block(in_channel, out_channel,
+                  kernel_size=4, stride=2, padding=1, activation='lrelu', norm=True):
+            layers = [nn.Conv2d(in_channel, out_channel, kernel_size=kernel_size, stride=stride, padding=padding)]
+            if norm:
+                layers.append(nn.InstanceNorm2d(out_channel))
+            if activation == 'lrelu':
+                layers.append(nn.LeakyReLU(0.2, inplace=True))
+            return layers
+
+        self.block1 = nn.Sequential(*Block(3, 64, norm=False))
+        self.block2 = nn.Sequential(*Block(64, 128))
+        self.block3 = nn.Sequential(*Block(128, 256))
+        self.block4 = nn.Sequential(*Block(256, 512, stride=1))
+        self.block5 = nn.Sequential(nn.Conv2d(512, 1, kernel_size=1, padding=1))
+
+    def forward(self, x):
+        b1 = self.block1(x)
+        b2 = self.block2(b1)
+        b3 = self.block3(b2)
+        out = self.block4(b3)
+        return out
+
+def weights_init(m, mean=0, std=0.02):
+    classname = m.__class__.__name__
+    if classname.find("Conv") != -1:
+        m.weight.data.normal_(mean, std)
+        m.bias.data.zero_()
+
