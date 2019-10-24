@@ -33,51 +33,60 @@ CycleGAN은 pair하지 않은 이미지들로 학습하여 서로의 스타일�
 <p align="center">
     <img src="http://latex.codecogs.com/gif.latex?\mathcal{L}_{GAN}(G,D_Y,X,Y) = \mathbb{E}_{y \sim p_data(y)}[logDy(y)] + \mathbb{E}_{x \sim p_data(x)}[log(1-D_Y(G(x)))]"\>
 </p>
-<p align='center'>
-    <img src="https://camo.githubusercontent.com/45a9327ea9e8a917a1f9d84312038a50966417c0/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f5c6d61746863616c7b4c7d5f7b47414e7d28472c445f592c582c5929203d205c6d61746862627b457d5f7b79205c73696d20705f646174612879297d5b6c6f6744792879295d202b205c6d61746862627b457d5f7b78205c73696d20705f646174612878297d5b6c6f6728312d445f59284728782929295d">
-</p>
-
 
 <p align="center">
     <img src="http://latex.codecogs.com/gif.latex?\mathcal{L}_{cyc}(G,F) = \mathbb{E}_{x \sim p_data(x)}[\left \| F(G(x)) - x \right \|_1] + \mathbb{E}_{y \sim p_data(y)}[\left \| G(F(y)) - y \right \|_1]"\>
 </p>
-<p align="center">
-    <img src="https://camo.githubusercontent.com/5c0fbbf488b8f604a5316a6006f3a4b1dfa1c247/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f5c6d61746863616c7b4c7d5f7b6379637d28472c4629203d205c6d61746862627b457d5f7b78205c73696d20705f646174612878297d5b5c6c656674205c7c2046284728782929202d2078205c7269676874205c7c5f315d202b205c6d61746862627b457d5f7b79205c73696d20705f646174612879297d5b5c6c656674205c7c2047284628792929202d2079205c7269676874205c7c5f315d">
-</p>
-
 
 <p align="center">
     <img src="http://latex.codecogs.com/gif.latex?\mathcal{L}(G,F,D_X,D_Y) = \mathcal{GAN}(G,D_Y,X,Y) + \mathcal{GAN}(F,D_X,Y,X) + \lambda \mathcal{cyc}(G,F)"\>
 </p>
-<p align="center">
-    <img src="https://camo.githubusercontent.com/bcd32f596e70d0869400cf7006e896c0d55590b8/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f5c6d61746863616c7b4c7d28472c462c445f582c445f5929203d205c6d61746863616c7b47414e7d28472c445f592c582c5929202b205c6d61746863616c7b47414e7d28462c445f582c592c5829202b205c6c616d626461205c6d61746863616c7b6379637d28472c4629">
-</p>
-
 
 <p align="center">
     <img src="http://latex.codecogs.com/gif.latex?G^*, F^* = arg min_(G,F) max_(D_x,D_Y) \mathcal{L}(G,F,D_X,D_Y)"\>
 </p>
+
+
 <p align="center">
-    <img src="https://camo.githubusercontent.com/a6c3db2d3b4dacdb226da18c1ec175e24dae05b0/687474703a2f2f6c617465782e636f6465636f67732e636f6d2f6769662e6c617465783f475e2a2c20465e2a203d20617267206d696e5f28472c4629206d61785f28445f782c445f5929205c6d61746863616c7b4c7d28472c462c445f582c445f5929"\>
+    <img src="https://trello-attachments.s3.amazonaws.com/5d663bdd41c39a1ad9983fff/1200x674/61a5de2aab22d1868a8b7ac7b0e24b72/image.png", width=720>
 </p>
 
 
-> **tricks**
-> - *GAN Loss 함수 변경*  
+**Tricks**
+- *LSGAN loss로 변경*  
 CycleGAN에서 cross-entropy를 사용하면 gradeint vanishing 문제가 발생한다.
 실험에서 LSGAN(Least Square GAN)으로 변경하면 더 좋은 성능이 나와서 사용하였다고 한다.
-> - *L1 loss*  
+
+<p align="center">
+    <img src="https://trello-attachments.s3.amazonaws.com/5d663bdd41c39a1ad9983fff/1200x675/bd6f322cae23a40ec1eecd5c41ad4644/image.png", width=720>
+</p>
+
+- *L1 loss*  
 말을 얼룩말로 바꾸는 네트워크 F와 그 반대로 얼룩말을 말로 바꾸는 네트워크 G를 이용하여 L1 loss를 적용한다.
 말 정답이미지(y)를 F()에 넣어 얼룩말을 생성하고, 생성된 얼룩말을 G()에 넣어 다시 말로 변환한 것을 정답이미지 y와 pixel 비교한다.
 G(), F() 네트워크가 Input 특성을 너무 많이 바꾸지 않도록 하게 한다.
-> - *Identity mapping loss*  
+
+- *Identity mapping loss*  
 또한, G() 네트워크에 정답 이미지(y)를 넣어서 만들어진 생성물과 정답 이미지의 L1 loss를 사용하여 
 조금 더 사실적인 사진 이미지로 변환하는데 도움을 준다. 
 
 
 **CycleGAN의 한계**
-- 모양을 바꾸기가 어려움
-- 데이터 분포
+- *모양(형태)을 바꾸기가 어려움*  
+사과를 오렌지로 생성할 때, 색만 변하고 형태는 사과모양을 유지
+
+<p align="center">
+    <img src="https://trello-attachments.s3.amazonaws.com/5d663bdd41c39a1ad9983fff/1200x676/3af08a8603755149c2e359e69356b7fd/image.png", width=720>
+</p>
+
+
+- *데이터 분포*  
+사람을 태운 말을 얼룩말로 바꿀때, 사람까지 얼룩무늬로 만드는 현상. 
+학습데이터에서 사람을 태운 말의 이미지가 없어서 발생한 것으로 보임
+
+<p align="center">
+    <img src="https://trello-attachments.s3.amazonaws.com/5d663bdd41c39a1ad9983fff/1200x675/8a9f3d4ab13e0d2a6b04972d8d68b7c6/image.png", width=720>
+</p>
 
 #### 3. Network
 
