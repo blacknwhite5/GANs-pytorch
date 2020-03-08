@@ -25,11 +25,11 @@ num_epoch = 100
 ### 이미지 전처리
 transform = transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+                transforms.Normalize([0.5], [0.5])])
 
 ### MNIST 데이터 셋 다운로드
-os.makedirs('data/mnist', exist_ok=True)
-mnist = datasets.MNIST(root='../data/mnist',
+os.makedirs('../../data', exist_ok=True)
+mnist = datasets.MNIST(root='../../data',
                     train=True, 
                     download=True, 
                     transform=transform)
@@ -93,7 +93,6 @@ def main():
             
             # D 최적화
             D_optim.zero_grad()
-            G_optim.zero_grad()
             loss_D.backward()
             D_optim.step()
 
@@ -108,7 +107,6 @@ def main():
             loss_G = -((D_gene).log().mean())
  
             # G 최적화
-            D_optim.zero_grad()
             G_optim.zero_grad()
             loss_G.backward()
             G_optim.step()
@@ -123,6 +121,7 @@ def main():
         # 이미지 저장
         fake_img = fake_img.view(fake_img.size(0), 1, 28, 28)   # N * C * H * W
         save_image(fake_img, os.path.join('samples', 'fake_images-{}.png'.format(epoch+1)), nrow=10, normalize=True)
+
 
 if __name__ == '__main__':
     main()
