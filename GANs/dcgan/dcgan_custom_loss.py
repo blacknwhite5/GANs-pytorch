@@ -182,7 +182,7 @@ def main():
 
 
 
-            # 학습 진행사항 출
+            # 학습 진행사항 출력
             print ("[Epoch %d/%d] [Batch %d/%d] [D loss: %f] [G loss: %f]" % (epoch, num_epoech, i, len(dataloader),
                                                                 loss_D.item(), loss_G.item()))
 
