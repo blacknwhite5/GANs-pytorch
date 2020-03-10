@@ -23,7 +23,7 @@ GAN은 이름에서도 알 수 있드시 *'Adversarial' 적대적인* 두 개의
 참고 : [[Jaejun Yoo's Playground] - generative-adversarial-nets](http://jaejunyoo.blogspot.com/2017/01/generative-adversarial-nets-1.html)
 
 <p align="center">
-<img src="image/new_gan_process.gif?raw=true" width="600px">
+<img src="assets/new_gan_process.gif?raw=true" width="600px">
 </p>
 
 위 gif로 generator(지폐위조범)과 discriminator(경찰)이 어떻게 학습하는지 표현해보았다. 
