@@ -140,6 +140,7 @@ GANs/cyclegan/images/
 GANs/pix2pix/images/
 GANs/gan/samples/
 GANs/can/images/
+GANs/wgan/samples/
 
 ### pretrained
 GANs/can/pretrained/
