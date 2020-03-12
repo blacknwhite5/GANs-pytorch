@@ -141,6 +141,7 @@ GANs/pix2pix/images/
 GANs/gan/samples/
 GANs/can/images/
 GANs/wgan/samples/
+GANs/wgan-gp/samples/
 
 ### pretrained
 GANs/can/pretrained/
