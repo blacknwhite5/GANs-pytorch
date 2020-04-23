@@ -112,8 +112,10 @@ def main():
             # Generator 
             # # # # #
             loss_G_fake = loss_BCE(D_fake, torch.ones_like(D_fake))
-            loss_G_cls_fake = -((1/27)*torch.ones(args.batch_size, 27).to(device) \
-                                    * nn.LogSoftmax(dim=1)(D_fake_cls)).sum(dim=1).mean()
+#            loss_G_cls_fake = -((1/27)*torch.ones(args.batch_size, 27).to(device) \
+#                                    * nn.LogSoftmax(dim=1)(D_fake_cls)).sum(dim=1).mean()
+            loss_G_cls_fake = -1 * ((1/27)*nn.LogSoftmax(1)(D_fake_cls) \
+                                        + (1-(1/27))*torch.log(1-nn.Softmax(1)(D_fake_cls))).mean() 
 
             loss_G = loss_G_fake + loss_G_cls_fake
 
@@ -132,12 +134,12 @@ def main():
             if batch_done % args.sampling_interval == 0:
                 save_image(fake, 'images/{0:03d}.png'.format(batch_done), normalize=True)
 
-            # 모델 저장
-            torch.save({
-                'G' : G.state_dict(),
-                'D' : D.state_dict(),
-                },
-                args.save_path)
+        # 모델 저장
+        torch.save({
+            'G' : G.state_dict(),
+            'D' : D.state_dict(),
+            },
+            args.save_path)
 
 if __name__ == '__main__':
     main()
